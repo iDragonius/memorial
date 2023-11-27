@@ -1,0 +1,121 @@
+import React, { FC, useContext, useState } from "react";
+import { createDefaultMaskGenerator, MaskedInput } from "react-hook-mask";
+import { AuthApi } from "@/lib/api/auth.api";
+import clsx from "clsx";
+import Error from "@/components/ui/Error";
+import { useRouter } from "next/navigation";
+import AuthContext, {
+  AuthContextData,
+} from "@/components/ui/providers/AuthContext";
+import { SignUpSteps, UserProps } from "@/pages/auth/sign-up";
+import PageView from "@/components/screens/auth/PageView";
+import { ShowError } from "@/utils/show-error";
+import ErrorMessages from "@/lib/error-messages";
+import toast from "react-hot-toast";
+import { UserContext } from "@/components/ui/providers/UserProvider";
+const maskGenerator = createDefaultMaskGenerator("9999");
+
+export interface OtpScreenProps {
+  phoneNumber: string;
+  changeStep: (step: SignUpSteps) => void;
+  setUserData: React.Dispatch<React.SetStateAction<UserProps>>;
+}
+
+const OtpScreen: FC<OtpScreenProps> = ({
+  phoneNumber,
+  changeStep,
+  setUserData,
+}) => {
+  const { push } = useRouter();
+  const [otp, setOtp] = useState<string>("");
+  const [error, setError] = useState<null | string>(null);
+  const { refetch } = useContext(UserContext);
+  const checkOtpAndLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    if (otp.length < 4) {
+      setError("OTP kodu düzgün daxil edin!");
+      return;
+    }
+    AuthApi.checkOtp({ phone: phoneNumber, otp })
+      .then((res) => {
+        if (res.data.data.register) {
+          AuthApi.loginWithOtp({
+            otpId: res.data.data.id,
+            phone: phoneNumber,
+          }).then((loginRes) => {
+            if (loginRes.data.success) {
+              localStorage.setItem(
+                "token",
+                loginRes.data.data.tokens.accessToken,
+              );
+              localStorage.setItem(
+                "refreshToken",
+                loginRes.data.data.tokens.refreshToken,
+              );
+              refetch();
+
+              push("/");
+              toast.success("Xoş gəlmisiniz!");
+            }
+          });
+        } else {
+          setUserData((prevState) => ({
+            ...prevState,
+            otpId: res.data.data.id,
+          }));
+          changeStep("INFORMATION_1");
+        }
+      })
+      .catch((error) => {
+        setError(ErrorMessages[error.response.data.data.messages[0]]);
+        ShowError(error);
+      });
+  };
+  return (
+    <div>
+      <PageView currentPage={2} pageCount={4} />
+      <h1
+        className={"text-24 sm:text-32 font-semibold max-[1000px]:text-center"}
+      >
+        Təsdiqləmə
+      </h1>
+      <p
+        className={
+          "text-[#747474] text-14 mt-3 mb-10 leading-6 max-[1000px]:text-center"
+        }
+      >
+        +994 {phoneNumber} nömrəsinə göndərilən 4 rəqəmli kodu aşağıdakı boş
+        xanaya yazaraq doldurun.
+      </p>
+
+      <form onSubmit={checkOtpAndLogin}>
+        <p className={"text-14 font-medium mb-2"}>OTP kodu*</p>
+        <MaskedInput
+          autoFocus={true}
+          value={otp}
+          onChange={(data) => setOtp(data)}
+          maskGenerator={maskGenerator}
+          placeholder={"OTP kodu daxil edin"}
+          className={
+            "w-full  border border-inputBorder px-4 py-3 outline-none trans hover:ring-2 hover:ring-opacity-60 hover:ring-primary focus:ring-2 focus:ring-opacity-60 focus:ring-primary rounded-[2px] placeholder:text-[#BBBBBB] hover:text-primary focus:text-primary"
+          }
+        />
+        <Error error={error} />
+
+        <button
+          className={clsx(
+            "py-3 px-6 w-full rounded-[4px] mt-6 font-medium ",
+            otp.length === 4
+              ? "trans bg-primary text-white hover:ring-4 hover:ring-primary hover:ring-opacity-70"
+              : "text-[#BBBBBB] bg-[#F2F2F2]",
+          )}
+        >
+          Davam Et
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default OtpScreen;

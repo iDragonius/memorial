@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.box {
+    @apply px-5 sm:px-8 min-[900px]:px-[60px] mb:px-[110px] min-[1680px]:px-[110px] mx-auto
+}
+
+.trans {
+    @apply transition-all ease-in-out;
+}
+svg {
+    transition: all 0.3s ;
+}
+
+
+
+.pag-active{
+    width: 15px !important;
+    height: 15px !important;
+}
+.pag-icon{
+    cursor: pointer;
+    width: 15px !important;
+    display: flex;
+    align-items: center;justify-content: center;
+    height: 15px !important;
+}
+.pag-icon .dott,.pag-active .dott{
+    width: 12px !important;
+    height: 12px !important;
+}
+.pag-active .dott{
+    background: #099B87 !important;
+}
+.main-header .swiper-horizontal > .swiper-pagination-bullets, .swiper-pagination-bullets.swiper-pagination-horizontal{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.pag-icon .dott,.pag-active .dott{
+    width: 9px ;
+    border-radius: 50%;
+    height: 9px ;
+    display: inline-block;
+    background: #D8D8D8;
+
+
+}
+
+.pag-icon,.pag-active{
+    margin-right: 6px;
+}

@@ -1,0 +1,9 @@
+.markdown  p {
+    @apply text-[#747474] mb-2.5 mt-2;
+}
+.markdown li:before {
+    content: '- ';
+}
+.markdown li {
+    @apply text-[#747474] my-1;
+}

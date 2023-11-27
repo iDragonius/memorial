@@ -1,0 +1,16 @@
+export const Routes = {
+  AUTH: "/auth",
+  BRANCH: "/client/branch",
+  USER: "/user",
+  CATALOG: "/client/catalog",
+  "BRANCH-ITEM": "/client/branch-item",
+  BASKET: "/client/basket",
+  ORDER: "/client/order",
+  BANNER: "/client/banner",
+  BLOG: "/client/blog",
+  VACANCY: "/client/vacancy",
+  CERTIFICATE: "/client/certificate",
+  FAQ: "/client/faq",
+  RATE: "/client/rate",
+  COLLECTION: "/client/collection",
+};
