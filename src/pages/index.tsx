@@ -12,7 +12,6 @@ import Image from "next/image";
 import Collections from "@/components/screens/home/Collections";
 export default function Home() {
   const isFetching = useIsFetching();
-  const test = "test";
   return (
     <>
       <Head>
